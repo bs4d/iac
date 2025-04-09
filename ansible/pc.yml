@@ -4,3 +4,4 @@
   become_method: doas
   roles:
     - network
+    - windows
