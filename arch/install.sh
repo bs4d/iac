@@ -69,7 +69,7 @@ rm --recursive --force /mnt/lost+found
 mount --mkdir "${DISK}1" /mnt/boot
 
 # install basic packages on the target system
-pacstrap -K /mnt base linux linux-firmware lvm2 neovim networkmanager dhcpcd openssh doas grub efibootmgr intel-ucode man-db man-pages texinfo ansible
+pacstrap -K /mnt base linux linux-firmware lvm2 neovim networkmanager dhcpcd doas grub efibootmgr intel-ucode man-db man-pages texinfo ansible
 
 # generate the fstab
 genfstab -U /mnt >> /mnt/etc/fstab
