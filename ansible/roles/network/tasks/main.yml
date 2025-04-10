@@ -13,10 +13,10 @@
     conn_name: home
     ifname: "{{ wifi_interface }}"
     type: wifi
-    ssid: "{{ home_wifi_ssid }}"
+    ssid: "{{ home_wifi.ssid }}"
     wifi_sec:
       key-mgmt: wpa-psk
-      psk: "{{ home_wifi_psk }}"
+      psk: "{{ home_wifi.psk }}"
 - name: bring up the home wifi connection
   nmcli:
     state: up
@@ -50,10 +50,10 @@
     generate_ssh_key: true
     ssh_key_type: ed25519
 - name: add the user ssh key to home server authorized keys
-  delegate_to: "{{ home_server_ip }}"
+  delegate_to: "{{ home_server.ip }}"
   vars:
-    ansible_user: "{{ home_server_user }}"
-    ansible_ssh_pass: "{{ home_server_password }}"
+    ansible_user: "{{ home_server.user }}"
+    ansible_ssh_pass: "{{ home_server.password }}"
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
   copy:
     src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
@@ -64,5 +64,5 @@
   become: true
   lineinfile:
     path: /etc/hosts
-    regexp: ^.*\s{{ home_server_hostname }}$
-    line: "{{ home_server_ip }} {{ home_server_hostname }}"
+    regexp: ^.*\s{{ home_server.hostname }}$
+    line: "{{ home_server.ip }} {{ home_server.hostname }}"
