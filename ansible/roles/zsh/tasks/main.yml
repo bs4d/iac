@@ -1,0 +1,20 @@
+---
+- name: install zsh
+  become: true
+  package:
+    state: present
+    name: zsh
+
+- name: clone the zsh config
+  git:
+    repo: "{{ git.base_url }}/zsh"
+    dest: "{{ ansible_env.HOME }}/git/zsh"
+
+- name: set up zsh for both users
+  loop:
+    - { user: root,                     home: /root,                    become: true }
+    - { user: "{{ ansible_env.USER }}", home: "{{ ansible_env.HOME }}", become: false }
+  include_tasks: user_setup.yml
+  args:
+    apply:
+      become: "{{ item.become }}"

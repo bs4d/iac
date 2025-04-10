@@ -1,0 +1,23 @@
+---
+- name: set zsh as the default shell for {{ item.user }}
+  become: true
+  user:
+    name: "{{ item.user }}"
+    shell: /usr/bin/zsh
+
+- name: create ~/.config directory for {{ item.user }}
+  file:
+    state: directory
+    path: "{{ item.home }}/.config"
+
+- name: symlink zsh config to ~/.config for {{ item.user }}
+  file:
+    state: link
+    src: "{{ ansible_env.HOME }}/git/zsh"
+    dest: "{{ item.home }}/.config/zsh"
+
+- name: symlink .zshenv to home for {{ item.user }}
+  file:
+    state: link
+    src: "{{ item.home }}/.config/zsh/.zshenv"
+    dest: "{{ item.home }}/.zshenv"
