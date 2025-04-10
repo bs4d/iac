@@ -1,0 +1,12 @@
+---
+- name: install git
+  become: true
+  package:
+    state: present
+    name: git
+
+- name: set up the git config file
+  template:
+    src: gitconfig.j2
+    dest: "{{ ansible_env.HOME }}/.gitconfig"
+    mode: 0644
