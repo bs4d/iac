@@ -43,22 +43,21 @@
     state: enabled
     default: deny
 
-# ssh key
 - name: create the user ssh key
   user:
     name: "{{ ansible_env.USER }}"
     generate_ssh_key: true
     ssh_key_type: ed25519
-- name: add the user ssh key to home server authorized keys
-  delegate_to: home_server
-  copy:
-    src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
-    dest: "/home/{{ ansible_user }}/.ssh/authorized_keys"
 
-# /etc/hosts
+# home server
 - name: add a host entry for the home server
   become: true
   lineinfile:
     path: /etc/hosts
     regexp: ^.*\s{{ home_server.hostname }}$
     line: "{{ home_server.ip }} {{ home_server.hostname }}"
+- name: add the user ssh key to home server authorized keys
+  delegate_to: home_server
+  copy:
+    src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
+    dest: "/home/{{ ansible_user }}/.ssh/authorized_keys"
