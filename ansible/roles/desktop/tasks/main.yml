@@ -1,0 +1,17 @@
+---
+- name: install desktop-related system packages
+  become: true
+  package:
+    state: present
+    name: "{{ packages.system }}"
+
+- name: install flatpak desktop apps
+  flatpak:
+    method: user
+    name: "{{ packages.flatpak }}"
+
+- name: enable sddm
+  become: true
+  systemd:
+    enabled: true
+    name: sddm

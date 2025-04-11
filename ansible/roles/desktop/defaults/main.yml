@@ -1,0 +1,30 @@
+---
+packages:
+  system:
+    # graphics
+    - nvidia
+
+    # xorg
+    - xclip
+
+    # kde
+    - plasma-meta
+    - kde-graphics-meta
+    - kde-system-meta
+    - kde-utilities-meta
+    - packagekit-qt6
+
+    # desktop apps
+    - firefox
+    - firefox-i18n-pl
+    - telegram-desktop
+
+    # fonts
+    - otf-hermit-nerd
+    - noto-fonts-cjk
+
+  flatpak:
+    - com.discordapp.Discord
+    - com.spotify.Client
+    - com.valvesoftware.Steam
+    - com.heroicgameslauncher.hgl
