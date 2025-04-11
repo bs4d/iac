@@ -1,0 +1,12 @@
+---
+- name: install bluez
+  become: true
+  package:
+    state: present
+    name: bluez
+
+- name: enable bluetooth
+  become: true
+  systemd:
+    enabled: true
+    name: bluetooth

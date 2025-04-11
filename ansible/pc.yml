@@ -4,6 +4,7 @@
   become_method: doas
   roles:
     - network
+    - bluetooth
     - git
     - zsh
     - neovim
