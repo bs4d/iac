@@ -1,0 +1,38 @@
+---
+- name: install sync tools
+  become: true
+  package:
+    state: present
+    name:
+    - syncthing
+    - rsync
+
+- name: install rsync on the home server
+  delegate_to: home_server
+  become: true
+  package:
+    state: present
+    name: rsync
+
+- name: create the syncthing config directory
+  file:
+    state: directory
+    path: "{{ ansible_env.HOME }}/.local/state/syncthing"
+
+- name: copy syncthing files from the home server
+  loop: "{{ syncthing_files }}"
+  synchronize:
+    src: "{{ home_server.user }}@{{ home_server.hostname }}:syncthing/{{ item.src }}/"
+    dest: "{{ ansible_env.HOME }}/{{ item.dest }}/"
+
+- name: allow syncthing traffic in ufw
+  become: true
+  ufw:
+    rule: allow
+    name: syncthing
+
+- name: enable syncthing
+  become: true
+  systemd:
+    enabled: true
+    name: "syncthing@{{ ansible_env.USER }}"
