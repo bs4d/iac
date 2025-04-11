@@ -50,11 +50,7 @@
     generate_ssh_key: true
     ssh_key_type: ed25519
 - name: add the user ssh key to home server authorized keys
-  delegate_to: "{{ home_server.ip }}"
-  vars:
-    ansible_user: "{{ home_server.user }}"
-    ansible_ssh_pass: "{{ home_server.password }}"
-    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+  delegate_to: home_server
   copy:
     src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
     dest: "/home/{{ ansible_user }}/.ssh/authorized_keys"

@@ -1,0 +1,11 @@
+all:
+  hosts:
+    pc:
+      ansible_host: 127.0.0.1
+      ansible_connection: local
+      ansible_become_method: doas
+    home_server:
+      ansible_host: "{{ home_server.ip }}"
+      ansible_user: "{{ home_server.user }}"
+      ansible_ssh_pass: "{{ home_server.password }}"
+      ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
