@@ -73,11 +73,14 @@ EOF
 # set up doas permissions for the user
 echo "permit nopass $USER_NAME" > /etc/doas.conf
 
-# move the ansible files to user home
-mv /root/ansible "/home/$USER_NAME/"
+# create a git directory for the user
+mkdir "/home/$USER_NAME/git"
 
-# set ownership for ansible files
-chown --recursive "$USER_NAME:$USER_NAME" "/home/$USER_NAME/ansible"
+# move the iac repository to it
+mv /root/iac "/home/$USER_NAME/git/iac"
+
+# set proper ownership
+chown --recursive "$USER_NAME:$USER_NAME" "/home/$USER_NAME/git"
 
 # create getty tty1 service directory
 mkdir --parents /etc/systemd/system/getty@tty1.service.d

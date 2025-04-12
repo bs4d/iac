@@ -74,8 +74,8 @@ pacstrap -K /mnt base linux linux-firmware lvm2 networkmanager dhcpcd doas grub 
 # generate the fstab
 genfstab -U /mnt >> /mnt/etc/fstab
 
-# copy the ansible files to target system
-cp --recursive "$repo_path/ansible" /mnt/root/
+# copy the iac repository to target system
+cp --recursive "$repo_path" /mnt/root/iac
 
 # run the provisioning script
 arch-chroot /mnt /bin/bash < "$repo_path/arch/setup.sh"
