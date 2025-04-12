@@ -1,0 +1,19 @@
+---
+- name: install arch script dependencies
+  become: true
+  package:
+    state: present
+    name:
+      - dosfstools
+      - arch-install-scripts
+
+- name: clone the iac repository
+  git:
+    repo: "{{ git.base_url }}/iac"
+    dest: "{{ ansible_env.HOME }}/git/iac"
+
+- name: run the backup git remote setup for the iac repository
+  include_role:
+    name: git_backup_remote
+  vars:
+    repository: iac
