@@ -10,6 +10,12 @@
     repo: "{{ git.base_url }}/zsh"
     dest: "{{ ansible_env.HOME }}/git/zsh"
 
+- name: run the backup git remote setup for the zsh config repository
+  include_role:
+    name: git_backup_remote
+  vars:
+    repository: zsh
+
 - name: set up zsh for both users
   loop:
     - { user: root,                     home: /root,                    become: true }

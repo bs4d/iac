@@ -1,0 +1,16 @@
+---
+- name: check for the backup git remote in the {{ repository }} repo
+  args:
+    chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
+  command: git remote get-url {{ git.backup_remote_name }}
+  changed_when: false
+  failed_when: false
+  register: backup_remote
+
+- name: set the backup git remote in the {{ repository }} repo
+  when: backup_remote.stdout != git.backup_base_url ~ "/" ~ repository
+  args:
+    chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
+  shell: |
+    git remote remove {{ git.backup_remote_name }}
+    git remote add {{ git.backup_remote_name }} "{{ git.backup_base_url }}/{{ repository }}"
