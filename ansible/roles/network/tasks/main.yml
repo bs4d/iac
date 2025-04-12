@@ -27,6 +27,11 @@
     port: 53
     timeout: 30
 
+- name: update pacman cache
+  become: true
+  pacman:
+    update_cache: true
+
 - name: install network packages
   become: true
   package:
