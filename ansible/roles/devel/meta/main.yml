@@ -1,5 +1,3 @@
 ---
 dependencies:
   - role: network
-  - role: git
-  - role: devel

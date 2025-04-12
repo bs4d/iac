@@ -5,6 +5,7 @@
     - network
     - bluetooth
     - git
+    - devel
     - zsh
     - neovim
     - flatpak

@@ -1,12 +1,10 @@
 ---
-- name: install neovim & devel packages for nvchad
+- name: install neovim
   become: true
   package:
     state: present
     name:
     - neovim
-    - gcc
-    - make
 
 - name: symlink the nvim binary to vim
   become: true
