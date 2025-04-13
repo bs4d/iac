@@ -14,16 +14,9 @@
     state: present
     name: rsync
 
-- name: create the syncthing config directory
-  file:
-    state: directory
-    path: "{{ ansible_env.HOME }}/.local/state/syncthing"
-
-- name: copy syncthing files from the home server
-  loop: "{{ syncthing_files }}"
-  synchronize:
-    src: "{{ home_server.user }}@{{ home_server.hostname }}:syncthing/{{ item.src }}/"
-    dest: "{{ ansible_env.HOME }}/{{ item.dest }}/"
+- name: set up syncthing directories
+  loop: "{{ syncthing_directories }}"
+  include_tasks: syncthing_dir.yml
 
 - name: allow syncthing traffic in ufw
   become: true
