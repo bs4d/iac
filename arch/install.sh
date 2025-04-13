@@ -7,6 +7,9 @@ repo_path="$(dirname $(realpath $0) | rev | cut --fields 2- --delimiter / | rev)
 # load the config file
 source "$repo_path/arch/config.sh"
 
+# restore the config file back to a template
+(cd "$repo_path" && su "$(stat --format '%U' .)" --command 'git restore arch/config.sh')
+
 # wipe the disk
 wipefs --all "$DISK"
 
