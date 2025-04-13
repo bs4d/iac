@@ -10,6 +10,13 @@
     method: user
     name: "{{ packages.flatpak }}"
 
+- name: install catppuccin mocha cursors
+  include_role:
+    name: aur_pkg
+  vars:
+    package_name: catppuccin-cursors-mocha
+    package_url: "https://aur.archlinux.org/catppuccin-cursors-mocha.git"
+
 - name: enable sddm
   become: true
   systemd:
