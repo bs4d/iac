@@ -17,6 +17,17 @@
     package_name: catppuccin-cursors-mocha
     package_url: "https://aur.archlinux.org/catppuccin-cursors-mocha.git"
 
+- name: enable sddm autologin
+  become: true
+  blockinfile:
+    create: true
+    path: /etc/sddm.conf.d/kde_settings.conf
+    block: |
+      [Autologin]
+      Relogin=false
+      Session=plasmax11
+      User={{ ansible_env.USER }}
+
 - name: enable sddm
   become: true
   systemd:
