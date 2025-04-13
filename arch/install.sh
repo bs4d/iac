@@ -53,14 +53,14 @@ EOF
 
 # set up LVM with 100% of PV as root
 pvcreate /dev/mapper/lvm
-vgcreate archtmp /dev/mapper/lvm
-lvcreate --extents 100%FREE archtmp --name root
+vgcreate arch /dev/mapper/lvm
+lvcreate --extents 100%FREE arch --name root
 
 # format the root filesystem
-mkfs.ext4 /dev/mapper/archtmp-root
+mkfs.ext4 /dev/mapper/arch-root
 
 # mount it
-mount /dev/mapper/archtmp-root /mnt
+mount /dev/mapper/arch-root /mnt
 
 # wipe lost+found
 rm --recursive --force /mnt/lost+found

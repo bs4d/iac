@@ -50,16 +50,13 @@ uuid=$(blkid | grep "${DISK}2" | cut --delimiter=' ' --fields=2 | sed 's/"//g')
 sed --in-place --expression='/^GRUB_TIMEOUT/s/5/0/' /etc/default/grub
 
 # set boot options
-sed --in-place --expression="/^GRUB_CMDLINE_LINUX_DEFAULT/s/\"\$/ cryptdevice=${uuid}:archtmp root=\/dev\/mapper\/archtmp-root lang=pl locale=pl_PL.UTF-8\"/" /etc/default/grub
+sed --in-place --expression="/^GRUB_CMDLINE_LINUX_DEFAULT/s/\"\$/ cryptdevice=${uuid}:arch root=\/dev\/mapper\/arch-root lang=pl locale=pl_PL.UTF-8\"/" /etc/default/grub
 
-# install grub (TODO: change the ID after done testing)
-grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUBTMP
+# install grub
+grub-install --target=x86_64-efi --efi-directory=/boot --bootloader-id=GRUB
 
 # generate grub config
 grub-mkconfig --output=/boot/grub/grub.cfg
-
-# set the boot order (TODO: delete after done testing)
-efibootmgr --bootorder 0,1
 
 # create user
 useradd --create-home "$USER_NAME"
