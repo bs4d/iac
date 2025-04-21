@@ -11,6 +11,7 @@
   git:
     repo: "{{ git.base_url }}/iac"
     dest: "{{ ansible_env.HOME }}/git/iac"
+    update: false
 
 - name: run the backup git remote setup for the iac repository
   include_role:
