@@ -17,6 +17,8 @@ packages:
     # desktop apps
     - firefox
     - firefox-i18n-pl
+    - thunderbird
+    - thunderbird-i18n-pl
     - telegram-desktop
 
     # fonts
