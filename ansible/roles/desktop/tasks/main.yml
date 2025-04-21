@@ -17,6 +17,17 @@
     package_name: catppuccin-cursors-mocha
     package_url: "https://aur.archlinux.org/catppuccin-cursors-mocha.git"
 
+- name: allow kdeconnect traffic in ufw
+  become: true
+  loop:
+    - tcp
+    - udp
+  ufw:
+    rule: allow
+    port: 1714:1764
+    proto: "{{ item }}"
+    comment: "kde connect"
+
 - name: enable sddm autologin
   become: true
   blockinfile:

@@ -13,6 +13,7 @@ packages:
     - kde-system-meta
     - kde-utilities-meta
     - packagekit-qt6
+    - kdeconnect
 
     # desktop apps
     - firefox
