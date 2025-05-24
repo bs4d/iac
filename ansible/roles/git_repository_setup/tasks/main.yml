@@ -1,4 +1,10 @@
 ---
+- name: clone the {{ repository }} repo
+  git:
+    repo: "{{ git.base_url }}/{{ repository }}"
+    dest: "{{ ansible_env.HOME }}/git/{{ repository }}"
+    update: false
+
 - name: check for the backup git remote in the {{ repository }} repo
   args:
     chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"

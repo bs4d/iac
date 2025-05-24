@@ -5,14 +5,9 @@
     state: present
     name: zsh
 
-- name: clone the zsh config
-  git:
-    repo: "{{ git.base_url }}/zsh"
-    dest: "{{ ansible_env.HOME }}/git/zsh"
-
-- name: run the backup git remote setup for the zsh config repository
+- name: set up the zsh config repository
   include_role:
-    name: git_backup_remote
+    name: git_repository_setup
   vars:
     repository: zsh
 

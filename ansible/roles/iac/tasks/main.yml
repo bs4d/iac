@@ -7,14 +7,8 @@
       - dosfstools
       - arch-install-scripts
 
-- name: clone the iac repository
-  git:
-    repo: "{{ git.base_url }}/iac"
-    dest: "{{ ansible_env.HOME }}/git/iac"
-    update: false
-
-- name: run the backup git remote setup for the iac repository
+- name: set up the iac repository
   include_role:
-    name: git_backup_remote
+    name: git_repository_setup
   vars:
     repository: iac
