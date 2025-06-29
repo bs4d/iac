@@ -1,22 +1,22 @@
 ---
 - name: clone the {{ repository }} repo
   git:
-    repo: "{{ git.base_url }}/{{ repository }}"
+    repo: "{{ secrets.home_server.user }}@{{ secrets.home_server.hostname }}:git/{{ repository }}"
     dest: "{{ ansible_env.HOME }}/git/{{ repository }}"
     update: false
 
 - name: check for the backup git remote in the {{ repository }} repo
   args:
     chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
-  command: git remote get-url {{ git.backup_remote_name }}
+  command: git remote get-url {{ secrets.git.backup_remote_name }}
   changed_when: false
   failed_when: false
   register: backup_remote
 
 - name: set the backup git remote in the {{ repository }} repo
-  when: backup_remote.stdout != git.backup_base_url ~ "/" ~ repository
+  when: backup_remote.stdout != secrets.git.backup_base_url ~ "/" ~ repository
   args:
     chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
   shell: |
-    git remote remove {{ git.backup_remote_name }}
-    git remote add {{ git.backup_remote_name }} "{{ git.backup_base_url }}/{{ repository }}"
+    git remote remove {{ secrets.git.backup_remote_name }}
+    git remote add {{ secrets.git.backup_remote_name }} "{{ secrets.git.backup_base_url }}/{{ repository }}"

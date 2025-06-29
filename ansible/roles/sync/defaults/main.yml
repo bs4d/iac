@@ -1,0 +1,11 @@
+---
+syncthing_directories:
+  - { src: "pc/config",           dest: ".config" }
+  - { src: "pc/local",            dest: ".local" }
+  - { src: "pc/thunderbird",      dest: ".thunderbird" }
+  - { src: "pc/var",              dest: ".var" }
+  - { src: "notatki",             dest: "notatki" }
+  - { src: "pc/Dokumenty",        dest: "Dokumenty" }
+  - { src: "pc/Muzyka",           dest: "Muzyka" }
+  - { src: "pc/Obrazy",           dest: "Obrazy" }
+  - { src: "telefon/zdjęcia",     dest: "Obrazy/telefon" }

@@ -13,10 +13,10 @@
     conn_name: home
     ifname: "{{ wifi_interface }}"
     type: wifi
-    ssid: "{{ home_wifi.ssid }}"
+    ssid: "{{ secrets.home_wifi.ssid }}"
     wifi_sec:
       key-mgmt: wpa-psk
-      psk: "{{ home_wifi.psk }}"
+      psk: "{{ secrets.home_wifi.psk }}"
 - name: bring up the home wifi connection
   nmcli:
     state: up
@@ -59,8 +59,8 @@
   become: true
   lineinfile:
     path: /etc/hosts
-    regexp: ^.*\s{{ home_server.hostname }}$
-    line: "{{ home_server.ip }} {{ home_server.hostname }}"
+    regexp: ^.*\s{{ secrets.home_server.hostname }}$
+    line: "{{ secrets.home_server.ip }} {{ secrets.home_server.hostname }}"
 - name: add the user ssh key to home server authorized keys
   delegate_to: home_server
   copy:
