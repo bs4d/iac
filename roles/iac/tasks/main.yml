@@ -7,8 +7,11 @@
       - dosfstools
       - arch-install-scripts
 
-- name: set up the iac repository
+- name: set up the iac repositories
+  loop:
+    - arch
+    - iac
   include_role:
     name: git_repository_setup
   vars:
-    repository: iac
+    repository: "{{ item }}"
