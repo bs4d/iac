@@ -2,14 +2,20 @@
 - name: provision the PC
   hosts: pc
   roles:
+    # establish connection to the internet, enable the firewall and establish ssh connection to the home server
     - network
-    - bluetooth
-    - git
-    - devel
-    - zsh
-    - neovim
-    - flatpak
-    - sync
-    - desktop
-    - iac
-    - windows
+
+    # install all of the required packages from various sources
+    - packages
+
+    # clone personal git repositories from the home server & configure them
+    - git-repos
+
+    # set up any required configuration files
+    - config
+
+    # set up file sync from the home server
+    - file-sync
+
+    # add firewall rules and enable any necessary services
+    - services

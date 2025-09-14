@@ -1,0 +1,11 @@
+---
+- name: install rsync on the home server
+  delegate_to: home_server
+  become: true
+  package:
+    state: present
+    name: rsync
+
+- name: set up syncthing directories
+  loop: "{{ syncthing_directories }}"
+  include_tasks: syncthing_dir.yml

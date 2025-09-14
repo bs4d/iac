@@ -1,0 +1,52 @@
+---
+package_list:
+  system:
+    # system
+    - dosfstools
+    - arch-install-scripts
+    - bluez
+    - zsh
+    - flatpak
+    - android-udev
+
+    # devel
+    - gcc
+    - make
+    - fakeroot
+    - debugedit
+
+    # tools
+    - git
+    - neovim
+    - rsync
+    - syncthing
+
+    # graphics
+    - nvidia-open
+    - xclip
+
+    # kde
+    - plasma-meta
+    - kde-graphics-meta
+    - kde-system-meta
+    - kde-utilities-meta
+    - packagekit-qt6
+    - kdeconnect
+
+    # desktop apps
+    - firefox
+    - firefox-i18n-pl
+    - thunderbird
+    - thunderbird-i18n-pl
+    - signal-desktop
+
+    # fonts
+    - otf-hermit-nerd
+    - noto-fonts-cjk
+
+  flatpak:
+    - com.valvesoftware.Steam
+    - com.heroicgameslauncher.hgl
+
+  aur:
+    - catppuccin-cursors-mocha

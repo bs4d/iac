@@ -1,0 +1,30 @@
+---
+- name: allow kdeconnect traffic in ufw
+  become: true
+  loop:
+    - tcp
+    - udp
+  ufw:
+    rule: allow
+    port: 1714:1764
+    proto: "{{ item }}"
+    comment: "kde connect"
+
+- name: allow syncthing traffic in ufw
+  become: true
+  ufw:
+    rule: allow
+    name: syncthing
+
+- name: reload ufw to apply changes
+  become: true
+  ufw:
+    state: reloaded
+  changed_when: false
+
+- name: enable the systemd services
+  become: true
+  loop: "{{ systemd_services }}"
+  systemd:
+    enabled: true
+    name: "{{ item }}"

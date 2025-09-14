@@ -1,0 +1,5 @@
+---
+systemd_services:
+  - sddm
+  - bluetooth
+  - "syncthing@{{ ansible_env.USER }}"
