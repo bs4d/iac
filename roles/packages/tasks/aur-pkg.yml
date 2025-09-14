@@ -1,0 +1,12 @@
+---
+- name: clone the {{ package_name }} aur repository
+  when: package_name not in packages
+  git:
+    repo: "https://aur.archlinux.org/{{ package_name }}.git"
+    dest: "{{ ansible_env.HOME }}/git/aur/{{ package_name }}"
+
+- name: install {{ package_name }}
+  when: package_name not in packages
+  command: makepkg --syncdeps --install --noconfirm
+  args:
+    chdir: "{{ ansible_env.HOME }}/git/aur/{{ package_name }}"

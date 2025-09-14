@@ -1,0 +1,61 @@
+---
+- name: set up the git config file
+  template:
+    src: gitconfig.j2
+    dest: "{{ ansible_env.HOME }}/.gitconfig"
+    mode: 0644
+
+- name: symlink the nvim binary to vim
+  become: true
+  file:
+    state: link
+    src: /usr/bin/nvim
+    dest: /usr/bin/vim
+
+- name: clone the nvchad config
+  git:
+    repo: https://github.com/NvChad/starter
+    dest: "{{ ansible_env.HOME }}/.config/nvim"
+    update: false
+
+- name: set the gruvbox theme for nvchad
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.config/nvim/lua/chadrc.lua"
+    regexp: ^.*\stheme\s=\s.*$
+    line: "\ttheme = \"gruvbox\","
+
+- name: create ~/.config directory for both users
+  loop:
+    - { path: /root,                    become: true }
+    - { path: "{{ ansible_env.HOME }}", become: false }
+  become: "{{ item.become }}"
+  file:
+    state: directory
+    path: "{{ item.path }}/.config"
+
+- name: symlink the user nvim config for root
+  become: true
+  file:
+    state: link
+    src: "{{ ansible_env.HOME }}/.config/nvim"
+    dest: /root/.config/nvim
+
+- name: set up zsh for both users
+  loop:
+    - { user: root,                     home: /root,                    become: true }
+    - { user: "{{ ansible_env.USER }}", home: "{{ ansible_env.HOME }}", become: false }
+  include_tasks: zsh-user-setup.yml
+  args:
+    apply:
+      become: "{{ item.become }}"
+
+- name: enable sddm autologin
+  become: true
+  blockinfile:
+    create: true
+    path: /etc/sddm.conf.d/kde_settings.conf
+    block: |
+      [Autologin]
+      Relogin=false
+      Session=plasmax11
+      User={{ ansible_env.USER }}

@@ -1,5 +1,15 @@
 ---
-# wifi connection
+# connection check
+- name: test ssh connectivity to the home server
+  command: "ssh -o BatchMode=yes -o ConnectTimeout=4 {{ secrets.home_server.user }}@{{ secrets.home_server.hostname }} true"
+  register: ssh_check
+  ignore_errors: true
+  changed_when: false
+- name: skip the rest of the role if home server is reachable
+  when: ssh_check.rc == 0
+  meta: end_role
+
+# home wifi connection
 - name: get the wifi interface name
   set_fact:
     wifi_interface: >-
@@ -27,22 +37,14 @@
     port: 53
     timeout: 30
 
-- name: update pacman cache
-  become: true
-  pacman:
-    update_cache: true
-
-- name: install network packages
+- name: install starting network packages
   become: true
   package:
     state: present
-    name:
-    - ufw
-    - openssh
-    - sshpass
+    name: "{{ package_list }}"
+    update_cache: true
 
-# firewall
-- name: enable ufw
+- name: enable the firewall
   become: true
   ufw:
     state: enabled
