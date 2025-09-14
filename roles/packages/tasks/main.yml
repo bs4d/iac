@@ -1,0 +1,39 @@
+---
+# system
+- name: install system packages
+  become: true
+  package:
+    state: present
+    name: "{{ package_list.system }}"
+    update_cache: true
+
+# flatpak
+- name: delete the system flathub remote
+  become: true
+  flatpak_remote:
+    state: absent
+    name: flathub
+- name: set up the user flathub remote
+  flatpak_remote:
+    name: flathub
+    flatpakrepo_url: https://dl.flathub.org/repo/flathub.flatpakrepo
+    method: user
+- name: install flatpak apps
+  flatpak:
+    method: user
+    name: "{{ package_list.flatpak }}"
+
+# aur
+- name: set makepkg config to use doas for privilege escalation
+  lineinfile:
+    create: true
+    path: "{{ ansible_env.HOME }}/.makepkg.conf"
+    regex: ^PACMAN_AUTH=.*$
+    line: "PACMAN_AUTH=('doas')"
+- name: gather aur package facts
+  package_facts:
+- name: install aur packages
+  loop: "{{ package_list.aur }}"
+  include_tasks: aur-pkg.yml
+  vars:
+    package_name: "{{ item }}"

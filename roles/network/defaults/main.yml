@@ -1,0 +1,5 @@
+---
+package_list:
+  - ufw
+  - openssh
+  - sshpass
