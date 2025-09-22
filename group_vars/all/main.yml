@@ -1,5 +1,10 @@
 ---
 package_list:
+  system_network:
+    - ufw
+    - openssh
+    - sshpass
+
   system:
     # system
     - dosfstools
@@ -50,3 +55,24 @@ package_list:
 
   aur:
     - catppuccin-cursors-mocha
+
+git_repositories:
+  - arch
+  - iac
+  - zsh
+
+syncthing_directories:
+  - { src: "pc/config",           dest: ".config" }
+  - { src: "pc/local",            dest: ".local" }
+  - { src: "pc/thunderbird",      dest: ".thunderbird" }
+  - { src: "pc/var",              dest: ".var" }
+  - { src: "notatki",             dest: "notatki" }
+  - { src: "pc/Dokumenty",        dest: "Dokumenty" }
+  - { src: "pc/Muzyka",           dest: "Muzyka" }
+  - { src: "pc/Obrazy",           dest: "Obrazy" }
+  - { src: "telefon/zdjęcia",     dest: "Obrazy/telefon" }
+
+systemd_services:
+  - sddm
+  - bluetooth
+  - "syncthing@{{ ansible_env.USER }}"
