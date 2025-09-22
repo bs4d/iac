@@ -40,8 +40,8 @@
 - name: install starting network packages
   become: true
   package:
-    state: present
-    name: "{{ package_list.system_network }}"
+    state: latest
+    name: "{{ package_list.system.network }}"
     update_cache: true
 
 - name: enable the firewall
