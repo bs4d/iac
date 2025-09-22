@@ -41,7 +41,7 @@
   become: true
   package:
     state: present
-    name: "{{ package_list }}"
+    name: "{{ package_list.system_network }}"
     update_cache: true
 
 - name: enable the firewall

@@ -1,6 +1,6 @@
 ---
 - name: set up git repositories
-  loop: "{{ repositories }}"
+  loop: "{{ git_repositories }}"
   include_tasks: repo-setup.yml
   vars:
     repository: "{{ item }}"
