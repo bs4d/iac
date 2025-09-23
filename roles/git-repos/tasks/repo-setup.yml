@@ -1,22 +1,35 @@
 ---
-- name: clone the {{ repository }} repo
+- name: clone/update {{ secrets.git.remotes.origin }}/{{ repository }}
   git:
-    repo: "{{ secrets.home_server.user }}@{{ secrets.home_server.hostname }}:git/{{ repository }}"
+    repo: "{{ secrets.git.remotes.origin }}/{{ repository }}"
     dest: "{{ ansible_env.HOME }}/git/{{ repository }}"
-    update: false
+  ignore_errors: true
+  register: origin_pull
 
-- name: check for the backup git remote in the {{ repository }} repo
-  args:
-    chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
-  command: git remote get-url {{ secrets.git.backup_remote_name }}
-  changed_when: false
-  failed_when: false
-  register: backup_remote
-
-- name: set the backup git remote in the {{ repository }} repo
-  when: backup_remote.stdout != secrets.git.backup_base_url ~ "/" ~ repository
+- name: set the backup remote for {{ repository }} repo
+  when: origin_pull is succeeded
   args:
     chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
   shell: |
-    git remote remove {{ secrets.git.backup_remote_name }}
-    git remote add {{ secrets.git.backup_remote_name }} "{{ secrets.git.backup_base_url }}/{{ repository }}"
+    if [ "$(git remote get-url backup)" != "{{ secrets.git.remotes.backup }}/{{ repository }}" ]; then
+      git remote remove backup
+      git remote add backup "{{ secrets.git.remotes.backup }}/{{ repository }}"
+    else
+      echo "remote properly configured"
+    fi
+  register: backup_setup
+  changed_when: backup_setup.stdout == ""
+
+- name: push to {{ secrets.git.remotes.backup }}/{{ repository }}
+  when: origin_pull is succeeded
+  command: git push backup
+  args:
+    chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
+  register: git_push
+  changed_when: secrets.git.remotes.backup.split('@')[1] in git_push.stderr
+
+- name: clone/update {{ secrets.git.remotes.backup }}/{{ repository }}
+  when: origin_pull is failed
+  git:
+    repo: "{{ secrets.git.remotes.backup }}/{{ repository }}"
+    dest: "{{ ansible_env.HOME }}/git/{{ repository }}"
