@@ -2,23 +2,37 @@
 package_list:
   system:
     network:
+      - networkmanager
+      - dhcpcd
       - ufw
       - openssh
       - sshpass
-    utils:
+    base:
+      - base
+      - linux
+      - linux-firmware
+      - lvm2
       - dosfstools
-      - arch-install-scripts
-      - bluez
+      - efibootmgr
+      - intel-ucode
+      - grub
       - zsh
+      - doas
+      - man-db
+      - man-pages
+      - texinfo
+      - bluez
       - flatpak
-      - android-udev
       - nvidia-open
+      - android-udev
     devel:
       - gcc
       - make
       - fakeroot
       - debugedit
     tools:
+      - arch-install-scripts
+      - ansible
       - git
       - neovim
       - rsync
