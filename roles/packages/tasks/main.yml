@@ -1,11 +1,17 @@
 ---
 # system
-- name: install/update system packages
+- name: update all present system packages
+  become: true
+  pacman:
+    update_cache: true
+    upgrade: true
+  register: upgrade
+  changed_when: upgrade.packages is defined
+- name: install target system packages
   become: true
   package:
-    state: latest
+    state: present
     name: "{{ package_list.system.values() | list | flatten }}"
-    update_cache: true
 
 # flatpak
 - name: delete the system flathub remote
