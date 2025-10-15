@@ -59,3 +59,10 @@
       Relogin=false
       Session=plasmax11
       User={{ ansible_env.USER }}
+
+- name: add user to the docker group
+  become: true
+  user:
+    name: "{{ ansible_env.USER }}"
+    groups: docker
+    append: true

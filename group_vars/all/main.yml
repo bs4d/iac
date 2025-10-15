@@ -33,6 +33,7 @@ package_list:
     tools:
       - arch-install-scripts
       - ansible
+      - docker
       - git
       - neovim
       - rsync
@@ -81,4 +82,5 @@ syncthing_directories:
 systemd_services:
   - sddm
   - bluetooth
+  - docker.socket
   - "syncthing@{{ ansible_env.USER }}"
