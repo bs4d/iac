@@ -39,6 +39,11 @@ package_list:
       - rsync
       - syncthing
       - xclip
+      - python-keyring
+      - vdirsyncer
+      - khard
+      - khal
+      - todoman
     kde:
       - plasma-meta
       - kde-graphics-meta
@@ -79,8 +84,11 @@ syncthing_directories:
   - { src: "pc/Obrazy",           dest: "Obrazy" }
   - { src: "telefon/zdjęcia",     dest: "Obrazy/telefon" }
 
-systemd_services:
-  - sddm
-  - bluetooth
-  - docker.socket
-  - "syncthing@{{ ansible_env.USER }}"
+services:
+  system:
+    - sddm
+    - bluetooth
+    - docker.socket
+    - "syncthing@{{ ansible_env.USER }}"
+  user:
+    - vdirsyncer.timer

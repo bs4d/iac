@@ -66,3 +66,30 @@
     name: "{{ ansible_env.USER }}"
     groups: docker
     append: true
+
+- name: add dav password to the python keyring
+  shell: |
+    python - << EOF
+    import keyring
+    password = keyring.get_password('vdirsyncer', "{{ secrets.dav.username }}")
+    if password != "{{ secrets.dav.password }}":
+      keyring.set_password('vdirsyncer', "{{ secrets.dav.username }}", "{{ secrets.dav.password }}")
+      print('password updated')
+    EOF
+  register: dav_password
+  changed_when: "'password updated' in dav_password.stdout"
+
+- name: create vdirsyncer collection directories
+  loop:
+    - "{{ ansible_env.HOME }}/.vdirsyncer/calendars/default"
+    - "{{ ansible_env.HOME }}/.vdirsyncer/addressbooks/default"
+  file:
+    state: directory
+    path: "{{ item }}"
+
+- name: sync vdirsyncer with the dav server
+  shell: |
+    vdirsyncer discover
+    vdirsyncer sync
+  register: vdirsyncer_sync
+  changed_when: "'uploading' in vdirsyncer_sync.stderr"

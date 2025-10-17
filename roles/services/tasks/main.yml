@@ -22,9 +22,30 @@
     state: reloaded
   changed_when: false
 
-- name: enable the systemd services
+- name: configure the vdirsyncer timer service
   become: true
-  loop: "{{ systemd_services }}"
+  loop:
+    - { var: "OnBootSec", value: '1m' }
+    - { var: "OnUnitActiveSec", value: '5m' }
+    - { var: "AccuracySec", value: '1m' }
+  lineinfile:
+    path: "/usr/lib/systemd/user/vdirsyncer.timer"
+    regexp: "{{ item.var }}="
+    line: "{{ item.var }}={{ item.value }}"
+  register: vdirsyncer_timer_config
+
+- name: enable systemd system services
+  become: true
+  loop: "{{ services.system }}"
   systemd:
+    state: started
+    enabled: true
+    name: "{{ item }}"
+
+- name: enable systemd user services
+  loop: "{{ services.user }}"
+  systemd:
+    scope: user
+    state: "{{ 'restarted' if item == 'vdirsyncer.timer' and vdirsyncer_timer_config.changed else 'started' }}"
     enabled: true
     name: "{{ item }}"

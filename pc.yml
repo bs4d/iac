@@ -17,5 +17,5 @@
     # set up file sync from the home server
     - file-sync
 
-    # add firewall rules and enable any necessary services
+    # configure and enable any necessary services
     - services
