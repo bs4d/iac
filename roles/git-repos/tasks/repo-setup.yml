@@ -1,22 +1,58 @@
 ---
-- name: clone the {{ repository }} repo
+- name: clone the {{ repository }} repository
   git:
-    repo: "{{ secrets.home_server.user }}@{{ secrets.home_server.hostname }}:git/{{ repository }}"
+    repo: "{{ secrets.git.remotes.home_server }}/{{ repository }}"
     dest: "{{ ansible_env.HOME }}/git/{{ repository }}"
     update: false
 
-- name: check for the backup git remote in the {{ repository }} repo
-  args:
-    chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
-  command: git remote get-url {{ secrets.git.backup_remote_name }}
-  changed_when: false
-  failed_when: false
-  register: backup_remote
-
-- name: set the backup git remote in the {{ repository }} repo
-  when: backup_remote.stdout != secrets.git.backup_base_url ~ "/" ~ repository
+- name: configure remotes for the {{ repository }} repository
   args:
     chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
   shell: |
-    git remote remove {{ secrets.git.backup_remote_name }}
-    git remote add {{ secrets.git.backup_remote_name }} "{{ secrets.git.backup_base_url }}/{{ repository }}"
+    old_remotes="$(git remote -v)"
+
+    case "{{ github_access.rc }}" in
+      1)
+        origin="{{ secrets.git.remotes.github }}/{{ repository }}"
+        backup="{{ secrets.git.remotes.home_server }}/{{ repository }}"
+        ;;
+      *)
+        origin="{{ secrets.git.remotes.home_server }}/{{ repository }}"
+        backup=""
+        ;;
+    esac
+
+    current_origin="$(git remote get-url origin)"
+    if [ "$current_origin" != "$origin" ]; then
+      [ -n "$current_origin" ] && git remote remove origin
+      git remote add origin "$origin"
+      git branch --set-upstream-to "origin/$(git branch --show-current)" "$(git branch --show-current)"
+    fi
+
+    current_backup="$(git remote get-url backup)"
+    if [ "current_backup" != "$backup" ]; then
+      [ -n "$current_backup" ] && git remote remove backup
+      [ -n "$backup" ] && git remote add backup "$backup"
+    fi
+
+    if [ "$old_remotes" = "$(git remote -v)" ]; then
+      echo "remotes unchanged"
+    fi
+  register: remote_setup
+  changed_when: "'remotes unchanged' not in remote_setup.stdout"
+
+- name: pull to the {{ repository }} repository from origin
+  when: repository != "iac"
+  args:
+    chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
+  shell: git pull --rebase origin $(git branch --show-current)
+  register: pull
+  changed_when: "'changed' in pull.stdout"
+
+- name: push from the {{ repository }} repository to all remotes
+  loop: "{{ lookup('pipe', 'git -C ' + ansible_env.HOME + '/git/' + repository + ' remote').split('\n') }}"
+  args:
+    chdir: "{{ ansible_env.HOME }}/git/{{ repository }}"
+  shell: git push {{ item }} $(git branch --show-current)
+  register: push
+  changed_when: "'Everything up-to-date' not in push.stderr"

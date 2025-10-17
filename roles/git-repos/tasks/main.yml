@@ -1,6 +1,13 @@
 ---
+- name: check access to github
+  command: ssh -T git@github.com
+  register: github_access
+  changed_when: false
+  failed_when: github_access.rc != 1
+  ignore_errors: true
+
 - name: set up git repositories
   loop: "{{ git_repositories }}"
+  loop_control:
+    loop_var: repository
   include_tasks: repo-setup.yml
-  vars:
-    repository: "{{ item }}"
