@@ -3,19 +3,25 @@
   hosts: pc
   roles:
     # establish connection to the internet, enable the firewall and establish ssh connection to the home server
-    - network
+    - role: network
+      tags: network
 
     # install all of the required packages from various sources
-    - packages
+    - role: packages
+      tags: packages
 
     # clone personal git repositories from the home server & configure them
-    - git-repos
+    - role: git-repos
+      tags: git-repos
 
     # set up any required configuration files
-    - config
+    - role: config
+      tags: config
 
     # set up file sync from the home server
-    - file-sync
+    - role: file-sync
+      tags: file-sync
 
     # configure and enable any necessary services
-    - services
+    - role: services
+      tags: services
