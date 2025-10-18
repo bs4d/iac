@@ -1,0 +1,26 @@
+---
+- name: symlink the nvim binary to vim
+  become: true
+  file:
+    state: link
+    src: /usr/bin/nvim
+    dest: /usr/bin/vim
+
+- name: clone the nvchad config
+  git:
+    repo: https://github.com/NvChad/starter
+    dest: "{{ ansible_env.HOME }}/.config/nvim"
+    update: false
+
+- name: set the gruvbox theme for nvchad
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.config/nvim/lua/chadrc.lua"
+    regexp: ^.*\stheme\s=\s.*$
+    line: "\ttheme = \"gruvbox\","
+
+- name: symlink the user nvim config for root
+  become: true
+  file:
+    state: link
+    src: "{{ ansible_env.HOME }}/.config/nvim"
+    dest: /root/.config/nvim
