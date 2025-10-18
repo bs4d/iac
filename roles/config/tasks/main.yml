@@ -93,3 +93,10 @@
     vdirsyncer sync
   register: vdirsyncer_sync
   changed_when: "'uploading' in vdirsyncer_sync.stderr"
+
+- name: copy ssh config
+  copy:
+    content: |
+      Host {{ secrets.home_server.hostname}}
+        User {{ secrets.home_server.user }}
+    dest: "{{ ansible_env.HOME }}/.ssh/config"
