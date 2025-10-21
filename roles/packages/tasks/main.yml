@@ -1,6 +1,13 @@
 ---
 # system
-- name: update all present system packages
+- name: run system update on the home server
+  when: inventory_hostname == "home_server"
+  become: true
+  apt:
+    update_cache: true
+    upgrade: dist
+- name: run system update on pc
+  when: inventory_hostname == "pc"
   become: true
   pacman:
     update_cache: true
@@ -12,6 +19,10 @@
   package:
     state: present
     name: "{{ package_list.system.values() | list | flatten }}"
+
+- name: skip flatpak and aur packages on the home server
+  when: inventory_hostname == "home_server"
+  meta: end_role
 
 # flatpak
 - name: delete the system flathub remote
