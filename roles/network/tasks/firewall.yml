@@ -1,0 +1,20 @@
+---
+- name: install ufw
+  become: true
+  package:
+    state: latest
+    name: ufw
+    update_cache: true
+
+- name: allow ssh connections in the home server firewall
+  when: inventory_hostname == "home_server"
+  become: true
+  ufw:
+    rule: allow
+    name: ssh
+
+- name: enable the firewall
+  become: true
+  ufw:
+    state: enabled
+    default: deny

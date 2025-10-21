@@ -1,6 +1,6 @@
 ---
 - name: provision the PC
-  hosts: pc
+  hosts: all
   pre_tasks:
     - name: merge common vars with host-specific ones
       loop: "{{ common | merge_dicts(host) | dict2items }}"

@@ -1,54 +1,25 @@
 ---
-# connection check
-- name: test ssh connectivity to the home server
-  command: "ssh -o BatchMode=yes -o ConnectTimeout=4 {{ secrets.home_server.user }}@{{ secrets.home_server.hostname }} true"
-  register: ssh_check
-  ignore_errors: true
+- name: check pc internet access
+  when: inventory_hostname == "pc"
+  command: ping -c 1 1.1.1.1
+  register: ping
   changed_when: false
-- name: skip the rest of the role if home server is reachable
-  when: ssh_check.rc == 0
-  meta: end_role
+  ignore_errors: true
 
-# home wifi connection
-- name: get the wifi interface name
-  set_fact:
-    wifi_interface: >-
-      {{ ansible_facts.interfaces |
-        select('match', '^w') |
-        list |
-        first }}
-- name: create the home wifi connection
-  nmcli:
-    state: present
-    conn_name: home
-    ifname: "{{ wifi_interface }}"
-    type: wifi
-    ssid: "{{ secrets.home_wifi.ssid }}"
-    wifi_sec:
-      key-mgmt: wpa-psk
-      psk: "{{ secrets.home_wifi.psk }}"
-- name: bring up the home wifi connection
-  nmcli:
-    state: up
-    conn_name: home
-- name: wait for internet access
-  wait_for:
-    host: 1.1.1.1
-    port: 53
-    timeout: 30
+- name: set up the pc wifi connection
+  when:
+    - inventory_hostname == "pc"
+    - ping.failed
+  include_tasks: wifi.yml
 
-- name: install starting network packages
+- name: check if firewall is enabled
   become: true
-  package:
-    state: latest
-    name: "{{ package_list.system.network }}"
-    update_cache: true
+  command: ufw status
+  register: firewall
 
-- name: enable the firewall
-  become: true
-  ufw:
-    state: enabled
-    default: deny
+- name: set up the firewall
+  when: "'Status: inactive' in firewall.stdout"
+  include_tasks: firewall.yml
 
 - name: create the user ssh key
   user:
@@ -56,15 +27,22 @@
     generate_ssh_key: true
     ssh_key_type: ed25519
 
-# home server
-- name: add a host entry for the home server
+- name: add a home server host entry for pc
+  when: inventory_hostname == "pc"
   become: true
   lineinfile:
     path: /etc/hosts
     regexp: ^.*\s{{ secrets.home_server.hostname }}$
     line: "{{ secrets.home_server.ip }} {{ secrets.home_server.hostname }}"
-- name: add the user ssh key to home server authorized keys
-  delegate_to: home_server
+
+- name: add the pc user public ssh key to home server authorized keys
+  when: inventory_hostname == "home_server"
   copy:
     src: "{{ lookup('env', 'HOME') }}/.ssh/id_ed25519.pub"
     dest: "/home/{{ ansible_user }}/.ssh/authorized_keys"
+
+- name: automatically accept new host keys in ssh connections
+  lineinfile:
+    path: "{{ ansible_env.HOME }}/.ssh/config"
+    regexp: ^StrictHostKeyChecking
+    line: StrictHostKeyChecking=accept-new
