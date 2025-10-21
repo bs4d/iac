@@ -1,94 +1,20 @@
 ---
-package_list:
-  system:
-    network:
-      - networkmanager
-      - dhcpcd
-      - ufw
-      - openssh
-      - sshpass
-    base:
-      - base
-      - linux
-      - linux-firmware
-      - lvm2
-      - dosfstools
-      - efibootmgr
-      - intel-ucode
-      - grub
-      - zsh
-      - doas
-      - man-db
-      - man-pages
-      - texinfo
-      - bluez
-      - flatpak
-      - nvidia-open
-      - android-udev
-    devel:
-      - gcc
-      - make
-      - fakeroot
-      - debugedit
-    tools:
-      - arch-install-scripts
-      - ansible
-      - docker
-      - git
-      - neovim
-      - rsync
-      - syncthing
-      - xclip
-      - python-keyring
-      - vdirsyncer
-      - khard
-      - khal
-      - todoman
-    kde:
-      - plasma-meta
-      - kde-graphics-meta
-      - kde-system-meta
-      - kde-utilities-meta
-      - packagekit-qt6
-      - kdeconnect
-    gui_apps:
-      - firefox
-      - firefox-i18n-pl
-      - thunderbird
-      - thunderbird-i18n-pl
-      - signal-desktop
-    fonts:
-      - otf-hermit-nerd
-      - noto-fonts-cjk
+common:
+  package_list:
+    system:
+      network:
+        - ufw
+      base:
+        - neovim
+        - zsh
+      tools:
+        - git
+        - rsync
+        - syncthing
 
-  flatpak:
-    - com.valvesoftware.Steam
-    - com.heroicgameslauncher.hgl
+  git_repositories:
+    - zsh
 
-  aur:
-    - catppuccin-cursors-mocha
-
-git_repositories:
-  - arch
-  - iac
-  - zsh
-
-syncthing_directories:
-  - { src: "pc/config",           dest: ".config" }
-  - { src: "pc/local",            dest: ".local" }
-  - { src: "pc/thunderbird",      dest: ".thunderbird" }
-  - { src: "pc/var",              dest: ".var" }
-  - { src: "notatki",             dest: "notatki" }
-  - { src: "pc/Dokumenty",        dest: "Dokumenty" }
-  - { src: "pc/Muzyka",           dest: "Muzyka" }
-  - { src: "pc/Obrazy",           dest: "Obrazy" }
-  - { src: "telefon/zdjęcia",     dest: "Obrazy/telefon" }
-
-services:
-  system:
-    - sddm
-    - bluetooth
-    - docker.socket
-    - "syncthing@{{ ansible_env.USER }}"
-  user:
-    - vdirsyncer.timer
+  services:
+    system:
+      - "syncthing@{{ ansible_env.USER }}"

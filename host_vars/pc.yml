@@ -1,0 +1,109 @@
+---
+host:
+  package_list:
+    system:
+      network:
+        - dhcpcd
+        - networkmanager
+        - openssh
+
+      base:
+        - base
+        - linux
+        - linux-firmware
+        - doas
+
+        # documentation
+        - man-db
+        - man-pages
+        - texinfo
+
+        # filesystem utils
+        - lvm2
+        - dosfstools
+
+        # bootloader
+        - grub
+        - efibootmgr
+        - intel-ucode
+
+      dependencies:
+        # aur
+        - gcc
+        - make
+        - fakeroot
+        - debugedit
+
+        # iac
+        - arch-install-scripts
+        - sshpass
+
+      tools:
+        - android-udev
+        - ansible
+        - bluez
+        - docker
+        - flatpak
+
+        # pimutils
+        - python-keyring
+        - vdirsyncer
+        - khal
+        - khard
+        - todoman
+
+      desktop:
+        # graphics drivers
+        - nvidia-open
+
+        # xorg utils
+        - xclip
+
+        # kde
+        - plasma-meta
+        - kde-graphics-meta
+        - kde-system-meta
+        - kde-utilities-meta
+        - packagekit-qt6
+        - kdeconnect
+
+        # gui apps
+        - firefox
+        - firefox-i18n-pl
+        - thunderbird
+        - thunderbird-i18n-pl
+        - signal-desktop
+
+        # fonts
+        - otf-hermit-nerd
+        - noto-fonts-cjk
+
+    flatpak:
+      - com.valvesoftware.Steam
+      - com.heroicgameslauncher.hgl
+
+    aur:
+      - catppuccin-cursors-mocha
+
+  git_repositories:
+    - arch
+    - iac
+
+  syncthing_directories:
+    - { src: "pc/config",           dest: ".config" }
+    - { src: "pc/local",            dest: ".local" }
+    - { src: "pc/thunderbird",      dest: ".thunderbird" }
+    - { src: "pc/var",              dest: ".var" }
+    - { src: "notatki",             dest: "notatki" }
+    - { src: "pc/Dokumenty",        dest: "Dokumenty" }
+    - { src: "pc/Muzyka",           dest: "Muzyka" }
+    - { src: "pc/Obrazy",           dest: "Obrazy" }
+    - { src: "telefon/zdjęcia",     dest: "Obrazy/telefon" }
+
+  services:
+    system:
+      - sddm
+      - bluetooth
+      - docker.socket
+    user:
+      - vdirsyncer.timer

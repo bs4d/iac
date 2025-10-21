@@ -1,6 +1,12 @@
 ---
 - name: provision the PC
   hosts: pc
+  pre_tasks:
+    - name: merge common vars with host-specific ones
+      loop: "{{ common | merge_dicts(host) | dict2items }}"
+      set_fact:
+        "{{ item.key }}": "{{ item.value }}"
+      tags: always
   roles:
     # establish connection to the internet, enable the firewall and establish ssh connection to the home server
     - role: network
