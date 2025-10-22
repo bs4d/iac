@@ -1,13 +1,83 @@
 ---
-- name: check access to github
+- name: check pc access to github
+  when: inventory_hostname == "pc"
   command: ssh -T git@github.com
   register: github_access
   changed_when: false
   failed_when: github_access.rc != 1
   ignore_errors: true
 
-- name: set up git repositories
+- name: clone all repositories
   loop: "{{ git_repositories }}"
-  loop_control:
-    loop_var: repository
-  include_tasks: repo-setup.yml
+  git:
+    repo: "{{ secrets.git.remotes.home_server }}/{{ item }}"
+    dest: "{{ ansible_env.HOME }}/git/{{ item }}"
+    update: false
+
+- name: configure remotes for all repositories
+  loop: "{{ git_repositories }}"
+  args:
+    chdir: "{{ ansible_env.HOME }}/git/{{ item }}"
+  shell: |
+    set -e
+    old_remotes="$(git remote -v)"
+
+    if "{{ (github_access.rc is defined and github_access.rc == 1) | lower }}"; then
+        origin="{{ secrets.git.remotes.github }}/{{ item }}"
+        backup="{{ secrets.git.remotes.home_server }}/{{ item }}"
+    else
+        origin="{{ secrets.git.remotes.home_server }}/{{ item }}"
+        backup=""
+    fi
+
+    current_origin="$(git remote get-url origin || true)"
+    if [ "$current_origin" != "$origin" ]; then
+      [ -z "$current_origin" ] || git remote remove origin
+      git remote add origin "$origin"
+      git fetch origin
+      git branch --set-upstream-to "origin/$(git branch --show-current)" "$(git branch --show-current)"
+    fi
+    current_backup="$(git remote get-url backup || true)"
+    if [ "current_backup" != "$backup" ]; then
+      [ -z "$current_backup" ] || git remote remove backup
+      [ -n "$backup" ] && git remote add backup "$backup"
+    fi
+
+    if [ "$old_remotes" = "$(git remote -v)" ]; then
+      echo "remotes unchanged"
+    fi
+
+  register: remote_setup
+  changed_when: "'remotes unchanged' not in remote_setup.stdout"
+
+- name: pull the pc repositories
+  loop: "{{ git_repositories }}"
+  when:
+    - inventory_hostname == "pc"
+    - item != "iac"
+  args:
+    chdir: "{{ ansible_env.HOME }}/git/{{ item }}"
+  shell: git pull --rebase origin $(git branch --show-current)
+  register: pull
+  changed_when: "'changed' in pull.stdout"
+
+- name: push from pc repositories to all remotes
+  loop: "{{ git_repositories }}"
+  when: inventory_hostname == "pc"
+  args:
+    chdir: "{{ ansible_env.HOME }}/git/{{ item }}"
+  shell: |
+    for remote in $(git remote); do
+      git push "$remote" $(git branch --show-current)
+    done
+  register: push
+  changed_when: (push.stderr_lines | reject("match", "Everything up-to-date") | list | length) > 0
+
+- name: pull the home server repositories
+  when: inventory_hostname == "home_server"
+  loop: "{{ git_repositories }}"
+  args:
+    chdir: "{{ ansible_env.HOME }}/git/{{ item }}"
+  shell: git pull --rebase origin $(git branch --show-current)
+  register: pull
+  changed_when: "'changed' in pull.stdout"
