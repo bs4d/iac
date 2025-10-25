@@ -1,11 +1,4 @@
 ---
-- name: symlink the nvim binary to vim
-  become: true
-  file:
-    state: link
-    src: /usr/bin/nvim
-    dest: /usr/bin/vim
-
 - name: clone the nvchad config
   git:
     repo: https://github.com/NvChad/starter

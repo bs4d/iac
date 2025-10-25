@@ -1,5 +1,6 @@
 ---
-- name: set up config files
+- name: set config files (pc only)
+  when: inventory_hostname == "pc"
   loop:
     - { src: gitconfig.j2, dest: .gitconfig }
     - { src: ssh-config.j2, dest: .ssh/config }
@@ -25,20 +26,30 @@
     apply:
       become: "{{ item.become }}"
 
-- name: set up nvim
+- name: symlink the neovim binary to vim
+  become: true
+  file:
+    state: link
+    src: /usr/bin/nvim
+    dest: /usr/bin/vim
+
+- name: (pc only) set the neovim config
   include_tasks: nvim.yml
 
-- name: set up vdirsyncer
+- name: set up vdirsyncer (pc only)
+  when: inventory_hostname == "pc"
   include_tasks: vdirsyncer.yml
 
-- name: add user to the docker group
+- name: add user to the docker group (pc only)
+  when: inventory_hostname == "pc"
   become: true
   user:
     name: "{{ ansible_env.USER }}"
     groups: docker
     append: true
 
-- name: enable sddm autologin
+- name: enable sddm autologin (pc only)
+  when: inventory_hostname == "pc"
   become: true
   blockinfile:
     create: true
